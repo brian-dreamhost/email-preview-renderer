@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, memo } from 'react'
 
 const CLIENTS = [
   { id: 'gmail', name: 'Gmail', icon: 'G' },
@@ -69,7 +69,7 @@ function getClientStyles(clientId, darkMode) {
   return base[clientId]
 }
 
-function ClientPreview({ clientId, html, darkMode }) {
+const ClientPreview = memo(function ClientPreview({ clientId, html, darkMode }) {
   const styles = getClientStyles(clientId, darkMode)
   const client = CLIENTS.find(c => c.id === clientId)
 
@@ -130,7 +130,7 @@ function ClientPreview({ clientId, html, darkMode }) {
       </div>
     </div>
   )
-}
+})
 
 export default function App() {
   const [html, setHtml] = useState('')
@@ -138,11 +138,42 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(false)
   const [viewMode, setViewMode] = useState('single')
 
+  const fillTestData = () => {
+    setHtml(`<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff;">
+  <div style="background: #2D3748; padding: 30px; text-align: center;">
+    <h1 style="color: #ffffff; margin: 0; font-size: 22px;">Product Launch Announcement</h1>
+    <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0; font-size: 14px;">Introducing our newest feature</p>
+  </div>
+  <div style="padding: 30px;">
+    <p style="color: #333; font-size: 16px; line-height: 1.6;">Hi there,</p>
+    <p style="color: #333; font-size: 16px; line-height: 1.6;">We're excited to announce <strong>Smart Analytics Dashboard</strong> — a new way to track your website performance in real time.</p>
+    <img src="https://via.placeholder.com/540x200/e2e8f0/4a5568?text=Smart+Analytics+Dashboard" alt="Smart Analytics Dashboard preview" style="width: 100%; border-radius: 8px; margin: 20px 0;" />
+    <h2 style="color: #2D3748; font-size: 18px; margin-top: 25px;">What's New</h2>
+    <ul style="color: #333; font-size: 15px; line-height: 1.8;">
+      <li>Real-time visitor tracking with geographic heatmaps</li>
+      <li>Conversion funnel analysis with drop-off alerts</li>
+      <li>Custom report builder with scheduled email delivery</li>
+      <li>Integration with Google Analytics and Search Console</li>
+    </ul>
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="#" style="background: #4C51BF; color: #ffffff; padding: 14px 32px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 16px;">Try It Free for 14 Days</a>
+    </div>
+    <p style="color: #333; font-size: 16px; line-height: 1.6;">All existing customers get free access during the beta period. No credit card required.</p>
+    <p style="color: #333; font-size: 16px;">Cheers,<br><strong>The Product Team</strong></p>
+  </div>
+  <div style="background: #f7fafc; padding: 20px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #e2e8f0;">
+    <p>You're receiving this because you're a registered user.</p>
+    <p><a href="#" style="color: #4C51BF;">Unsubscribe</a> | <a href="#" style="color: #4C51BF;">View in browser</a></p>
+    <p>789 Innovation Blvd, San Jose, CA 95134</p>
+  </div>
+</div>`)
+  }
+
   const displayHtml = html || ''
 
   return (
     <div className="min-h-screen bg-abyss bg-glow bg-grid">
-      <div className="max-w-6xl mx-auto px-4 py-12 animate-fadeIn">
+      <div className="max-w-[1600px] mx-auto px-4 py-12 animate-fadeIn">
         <nav className="mb-8 text-sm text-galactic">
           <a href="https://seo-tools-tau.vercel.app/" className="text-azure hover:text-white transition-colors">Free Tools</a>
           <span className="mx-2 text-metal">/</span>
@@ -155,6 +186,16 @@ export default function App() {
           <div className="inline-flex items-center px-4 py-2 border border-turtle text-turtle rounded-full text-sm font-medium mb-6">Free Tool</div>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Email Preview Renderer</h1>
           <p className="text-cloudy text-lg max-w-2xl mx-auto">See how your HTML email renders across Gmail, Outlook, and Apple Mail — including dark mode.</p>
+        </div>
+
+        <div className="flex justify-end mb-4">
+          <button
+            type="button"
+            onClick={fillTestData}
+            className="px-3 py-1.5 text-xs font-mono bg-prince/20 text-prince border border-prince/30 rounded hover:bg-prince/30 transition-colors focus:outline-none focus:ring-2 focus:ring-prince focus:ring-offset-2 focus:ring-offset-abyss"
+          >
+            Fill Test Data
+          </button>
         </div>
 
         {/* Input */}
@@ -176,7 +217,7 @@ export default function App() {
         <div className="card-gradient border border-metal/20 rounded-2xl p-4 mb-6 flex flex-wrap items-center gap-4">
           <div className="flex gap-1 bg-midnight rounded-lg p-1">
             {CLIENTS.map(c => (
-              <button key={c.id} onClick={() => setActiveClient(c.id)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${activeClient === c.id && viewMode === 'single' ? 'bg-azure text-white' : 'text-galactic hover:text-white'}`}>
+              <button key={c.id} onClick={() => setActiveClient(c.id)} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors hover-lift ${activeClient === c.id && viewMode === 'single' ? 'bg-azure text-white' : 'text-galactic hover:text-white'}`}>
                 {c.name}
               </button>
             ))}
@@ -205,7 +246,7 @@ export default function App() {
           <ClientPreview clientId={activeClient} html={displayHtml} darkMode={darkMode} />
         ) : (
           <div className="grid lg:grid-cols-3 gap-4">
-            {CLIENTS.map(c => <ClientPreview key={c.id} clientId={c.id} html={displayHtml} darkMode={darkMode} />)}
+            {CLIENTS.map((c, index) => <div key={c.id} className="animate-slideUp" style={{ animationDelay: `${index * 0.08}s` }}><ClientPreview clientId={c.id} html={displayHtml} darkMode={darkMode} /></div>)}
           </div>
         )}
 
@@ -218,7 +259,7 @@ export default function App() {
       </div>
 
       <footer className="border-t border-metal/30 mt-16">
-        <div className="max-w-6xl mx-auto px-4 py-6 text-center text-sm text-galactic">
+        <div className="max-w-[1600px] mx-auto px-4 py-6 text-center text-sm text-galactic">
           Free marketing tools by <a href="https://www.dreamhost.com" target="_blank" rel="noopener" className="text-azure hover:text-white transition-colors">DreamHost</a>
         </div>
       </footer>
